@@ -80,15 +80,6 @@ CommandLineArgs::CommandLineArgs()
     {
         m_Appname = m_Basename;
     }
-
-#ifdef DEBUG
-    std::wcout << L"Fullname: " << m_Fullname << std::endl;
-    std::wcout << L"Basename: " << m_Basename << std::endl;
-    std::wcout << L"Appname: " << m_Appname << std::endl;
-    std::wcout << L"Commandline: " << m_Commandline << std::endl;
-    std::wcout << L"Args: " << m_Args << std::endl;
-#endif
-
 }
 
 
@@ -231,7 +222,7 @@ const std::wstring UWPAppLauncher::GetErrorMessage() const
     return std::wstring(buf);
 }
 
-int wmain(int argc, WCHAR *argv[])
+int WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd)
 {
     int result = 1;
     CommandLineArgs args;
@@ -248,12 +239,13 @@ int wmain(int argc, WCHAR *argv[])
 
     if (p == nullptr)
     {
-        std::wcout << args.Appname() << L" is not installed\n";
-        std::wcout << L"Ensure the binary is named one of AffinityPhoto2.exe, AffinityDesigner2.exe or AffinityPublisher2.exe depending on which application you wish to launch" << std::endl;
+        std::wstring wsMsg = args.Appname() + L" is not installed. Ensure the binary is named one of AffinityPhoto2.exe, AffinityDesigner2.exe or AffinityPublisher2.exe";
+        MessageBoxW(NULL, wsMsg.c_str() , args.Appname().c_str(), MB_OK|MB_ICONERROR);
     }
     else if (!p->Launch(args.Arguments()))
     {
-        std::wcout << L"Failed to launch app: " << p->GetErrorMessage() << std::endl;
+        std::wstring wsMsg = L"Failed to launch app: " + p->GetErrorMessage();
+        MessageBoxW(NULL, wsMsg.c_str(), args.Appname().c_str(), MB_OK| MB_ICONERROR);
     }
     else result = 0;
 
